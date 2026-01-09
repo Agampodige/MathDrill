@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Progress</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="level-progress-container">
+        <!-- Header -->
+        <div class="level-header">
+            <button id="backButton" class="back-button">← Back to Levels</button>
+            <h1 id="levelTitle">Loading...</h1>
+            <p id="levelDescription" class="level-description"></p>
+        </div>
+
+        <!-- Progress Information -->
+        <div class="progress-info-bar">
+            <div class="progress-stat">
+                <span class="stat-label">Progress</span>
+                <span id="progressText" class="stat-value">0/0</span>
+            </div>
+            <div class="progress-stat">
+                <span class="stat-label">Accuracy</span>
+                <span id="accuracyText" class="stat-value">0%</span>
+            </div>
+            <div class="progress-stat" id="timerStatDiv" style="display:none;">
+                <span class="stat-label">Time Left</span>
+                <span id="timerText" class="stat-value">--:--</span>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <!-- Main Practice Area -->
+        <div id="practiceArea" class="level-practice-area">
+            <!-- Question Display -->
+            <div class="question-container">
+                <div id="questionDisplay" class="question-display">
+                    <div class="question-prompt" id="questionPrompt">0 + 0 = ?</div>
+                </div>
+            </div>
+
+            <!-- Answer Input -->
+            <div class="answer-input-container">
+                <input 
+                    type="number" 
+                    id="answerInput" 
+                    class="answer-input" 
+                    placeholder="Enter your answer"
+                    autocomplete="off"
+                >
+                <button id="submitButton" class="submit-button">Submit</button>
+            </div>
+
+            <!-- Feedback Area -->
+            <div id="feedbackArea" class="feedback-area" style="display: none;">
+                <div id="feedbackMessage" class="feedback-message"></div>
+                <button id="nextButton" class="next-button">Next Question</button>
+            </div>
+
+            <!-- Stars Counter -->
+            <div class="stars-counter">
+                <span class="stars-label">Stars:</span>
+                <div id="starsDisplay" class="stars-display">
+                    <span class="star empty">☆</span>
+                    <span class="star empty">☆</span>
+                    <span class="star empty">☆</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Complete Modal -->
+    <div id="completionModal" class="modal" style="display: none;">
+        <div class="modal-content completion-modal">
+            <h2>Level Complete!</h2>
+            <div class="completion-stars">
+                <div id="earnedStars" class="earned-stars"></div>
+            </div>
+            <p id="completionText" class="completion-text"></p>
+            <div class="completion-stats">
+                <div class="stat">
+                    <span class="label">Accuracy:</span>
+                    <span id="finalAccuracy" class="value">0%</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Time:</span>
+                    <span id="finalTime" class="value">0s</span>
+                </div>
+            </div>
+            <div class="completion-actions">
+                <button id="nextLevelBtn" class="button-primary" style="display: none;">Next Level</button>
+                <button id="retryLevelBtn" class="button-secondary">Retry Level</button>
+                <button id="backToLevelsBtn" class="button-secondary">Back to Levels</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for Modal -->
+    <div id="modalOverlay" class="modal-overlay" style="display: none;"></div>
+
+    <script src="level_progress.js"></script>
+</body>
+</html>

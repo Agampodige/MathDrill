@@ -1,0 +1,73 @@
+{
+  "lastId": 6,
+  "attempts": [
+    {
+      "id": 1,
+      "operation": "addition",
+      "digits": 1,
+      "question": "5 + 7",
+      "userAnswer": 12,
+      "correctAnswer": 12,
+      "isCorrect": true,
+      "timeTaken": 8.622,
+      "timestamp": "2026-01-09T17:38:25.897Z"
+    },
+    {
+      "id": 2,
+      "operation": "addition",
+      "digits": 1,
+      "question": "8 + 3",
+      "userAnswer": 11,
+      "correctAnswer": 11,
+      "isCorrect": true,
+      "timeTaken": 4.837,
+      "timestamp": "2026-01-09T17:38:32.252Z"
+    },
+    {
+      "id": 3,
+      "operation": "addition",
+      "digits": 1,
+      "question": "2 + 7",
+      "userAnswer": 9,
+      "correctAnswer": 9,
+      "isCorrect": true,
+      "timeTaken": 3.529,
+      "timestamp": "2026-01-09T17:38:37.292Z"
+    },
+    {
+      "id": 4,
+      "operation": "addition",
+      "digits": 1,
+      "question": "6 + 3",
+      "userAnswer": 9,
+      "correctAnswer": 9,
+      "isCorrect": true,
+      "timeTaken": 1.802,
+      "timestamp": "2026-01-09T17:38:40.600Z"
+    },
+    {
+      "id": 5,
+      "operation": "addition",
+      "digits": 1,
+      "question": "1 + 5",
+      "userAnswer": 6,
+      "correctAnswer": 6,
+      "isCorrect": true,
+      "timeTaken": 3.372,
+      "timestamp": "2026-01-09T17:38:45.484Z"
+    },
+    {
+      "id": 6,
+      "operation": "addition",
+      "digits": 1,
+      "question": "5 + 5",
+      "userAnswer": 10,
+      "correctAnswer": 10,
+      "isCorrect": true,
+      "timeTaken": 2.025,
+      "timestamp": "2026-01-09T17:38:49.020Z"
+    }
+  ],
+  "lastSaved": "2026-01-09T23:08:49.023329",
+  "totalAttempts": 6
+}

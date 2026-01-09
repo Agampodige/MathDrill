@@ -1,0 +1,11 @@
+{
+    "name": "Simple Hello Addon",
+    "package": "math_drill",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "mod": 23456789,
+    "min_point_version": 231200,
+    "max_point_version": 239999,
+    "homepage": "https://github.com/yourusername/simple-hello-addon",
+    "description": "A simple Anki addon that adds a menu item to show a hello message"
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="style.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+</head>
+<body>
+    <main>
+        <h1>Settings</h1>
+        <div class="page-container active">
+            <div class="settings-container">
+                <div class="setting-group">
+                    <label for="themeSelect">Theme:</label>
+                    <select id="themeSelect">
+                        <option value="light">Light Mode</option>
+                        <option value="dark">Dark Mode</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="soundToggle">
+                        <input type="checkbox" id="soundToggle" checked>
+                        Enable Sound Effects
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label for="notificationsToggle">
+                        <input type="checkbox" id="notificationsToggle" checked>
+                        Enable Notifications
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label for="problemsPerSession">Problems per session:</label>
+                    <input type="number" id="problemsPerSession" min="5" max="50" value="10">
+                </div>
+                <div class="setting-group">
+                    <label for="difficultyLevel">Difficulty:</label>
+                    <select id="difficultyLevel">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <button id="saveSettingsBtn" class="submit-button">Save Settings</button>
+                <button id="resetBtn" class="reset-button">Reset to Default</button>
+            </div>
+            <button id="backBtn" class="back-button">← Back to Home</button>
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="style.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics</title>
+</head>
+<body>
+    <main>
+        <h1>Analytics</h1>
+        <div class="page-container active">
+            <!-- Overall Statistics -->
+            <div class="analytics-section">
+                <h2>Overall Statistics</h2>
+                <div class="analytics-container">
+                    <div class="stat-card">
+                        <h3>Total Problems</h3>
+                        <p class="stat-value" id="totalProblems">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Correct Answers</h3>
+                        <p class="stat-value" id="correctAnswers">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Overall Accuracy</h3>
+                        <p class="stat-value" id="overallAccuracy">0%</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Time</h3>
+                        <p class="stat-value" id="avgTime">0.0s</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operation Statistics -->
+            <div class="analytics-section">
+                <h2>By Operation</h2>
+                <div id="operationStats" class="operation-stats">
+                    <p class="loading">Loading statistics...</p>
+                </div>
+            </div>
+
+            <!-- Recent Attempts -->
+            <div class="analytics-section">
+                <h2>Recent Attempts</h2>
+                <div class="table-container">
+                    <table id="recentTable" class="attempts-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Operation</th>
+                                <th>Question</th>
+                                <th>Your Answer</th>
+                                <th>Correct</th>
+                                <th>Time (s)</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attemptsBody">
+                            <tr><td colspan="7" class="loading">Loading attempts...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="analytics-actions">
+                <button id="refreshBtn" class="submit-button">Refresh Data</button>
+                <button id="clearBtn" class="reset-button">Clear All Data</button>
+            </div>
+
+            <button id="backBtn" class="back-button">← Back to Home</button>
+        </div>
+    </main>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="app.js"></script>
+    <script src="analytics.js"></script>
+</body>
+</html>

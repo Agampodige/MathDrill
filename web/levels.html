@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="style.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levels</title>
+</head>
+<body>
+    <main>
+        <div class="page-container active">
+            <div class="levels-header">
+                <h1>Levels</h1>
+                <div class="progression-stats">
+                    <div class="stat">
+                        <span class="label">Total Stars:</span>
+                        <span id="totalStars" class="value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Completed:</span>
+                        <span id="completedCount" class="value">0</span>/<span id="totalCount" class="value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="levelsContainer" class="levels-grid">
+                <div class="loading-spinner">Loading levels...</div>
+            </div>
+
+            <button id="backBtn" class="back-button">← Back to Home</button>
+        </div>
+    </main>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="levels.js"></script>
+</body>
+</html>
