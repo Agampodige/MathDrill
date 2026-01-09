@@ -5,16 +5,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Drill - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <main>
-        <h1>Welcome Back</h1>
-        <section class="pages_navigation">
-            <button class="nav-button" data-page="free_drills" onclick="navigateToPage('free_drills')">Free Drills</button>
-            <button class="nav-button" data-page="levels" onclick="navigateToPage('levels')">Levels</button>
-            <button class="nav-button" data-page="practice_mode" onclick="navigateToPage('practice_mode')">Practice Mode</button>
-            <button class="nav-button" data-page="analytics" onclick="navigateToPage('analytics')">Analytics</button>
-            <button class="nav-button" data-page="settings" onclick="navigateToPage('settings')">Settings</button>
+    <main class="home-main">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Math Drill</h1>
+                <p class="hero-subtitle">Master mathematics with personalized practice and progress tracking</p>
+            </div>
+        </div>
+        
+        <section class="navigation-grid">
+            <button class="nav-card btn-primary" data-page="free_drills" onclick="navigateToPage('free_drills')">
+                <div class="nav-icon">🎯</div>
+                <div class="nav-content">
+                    <h3>Free Drills</h3>
+                    <p>Practice unlimited math problems at your own pace</p>
+                </div>
+                <div class="nav-arrow">→</div>
+            </button>
+            
+            <button class="nav-card btn-secondary" data-page="levels" onclick="navigateToPage('levels')">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-content">
+                    <h3>Levels</h3>
+                    <p>Progress through challenging levels and earn stars</p>
+                </div>
+                <div class="nav-arrow">→</div>
+            </button>
+            
+            <button class="nav-card btn-primary" data-page="practice_mode" onclick="navigateToPage('practice_mode')">
+                <div class="nav-icon">💪</div>
+                <div class="nav-content">
+                    <h3>Practice Mode</h3>
+                    <p>Focused practice with customizable settings</p>
+                </div>
+                <div class="nav-arrow">→</div>
+            </button>
+            
+            <button class="nav-card btn-accent" data-page="analytics" onclick="navigateToPage('analytics')">
+                <div class="nav-icon">📊</div>
+                <div class="nav-content">
+                    <h3>Analytics</h3>
+                    <p>Track your progress and performance insights</p>
+                </div>
+                <div class="nav-arrow">→</div>
+            </button>
+            
+            <button class="nav-card btn-secondary" data-page="settings" onclick="navigateToPage('settings')">
+                <div class="nav-icon">⚙️</div>
+                <div class="nav-content">
+                    <h3>Settings</h3>
+                    <p>Customize your learning experience</p>
+                </div>
+                <div class="nav-arrow">→</div>
+            </button>
         </section>
     </main>
 
