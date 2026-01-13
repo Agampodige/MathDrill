@@ -5,50 +5,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <main>
-        <h1>Settings</h1>
         <div class="page-container active">
             <div class="settings-container">
-                <div class="setting-group">
-                    <label for="themeSelect">Theme:</label>
-                    <select id="themeSelect">
-                        <option value="light">Light Mode</option>
-                        <option value="dark">Dark Mode</option>
-                        <option value="auto">Auto</option>
-                    </select>
+                <!-- Header -->
+                <div class="settings-header-nav">
+                    <button id="backBtn" class="settings-back-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h1>Settings</h1>
+                    <div class="header-spacer"></div>
                 </div>
-                <div class="setting-group">
-                    <label for="soundToggle">
-                        <input type="checkbox" id="soundToggle" checked>
-                        Enable Sound Effects
-                    </label>
+
+                <div class="settings-content">
+                    <!-- Theme Section -->
+                    <div class="settings-section">
+                        <div class="section-title">🎨 Appearance</div>
+                        <div class="setting-group">
+                            <label for="themeSelect">Theme Preference:</label>
+                            <div class="select-wrapper">
+                                <select id="themeSelect">
+                                    <option value="light">☀️ Light Mode</option>
+                                    <option value="dark">🌙 Dark Mode</option>
+                                    <option value="auto">🔄 Auto (System)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sound & Notifications Section -->
+                    <div class="settings-section">
+                        <div class="section-title">🔔 Sound & Notifications</div>
+                        <div class="setting-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="soundToggle" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Enable Sound Effects</span>
+                            </label>
+                        </div>
+                        <div class="setting-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="notificationsToggle" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Enable Notifications</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Practice Settings Section -->
+                    <div class="settings-section">
+                        <div class="section-title">📚 Practice Settings</div>
+                        <div class="setting-group">
+                            <label for="problemsPerSession">Problems per session:</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="problemsPerSession" min="5" max="50" value="10">
+                                <span class="input-hint">Between 5 and 50</span>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <label for="difficultyLevel">Default Difficulty:</label>
+                            <div class="select-wrapper">
+                                <select id="difficultyLevel">
+                                    <option value="easy">🟢 Easy</option>
+                                    <option value="medium" selected>🟡 Medium</option>
+                                    <option value="hard">🔴 Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Display Options Section -->
+                    <div class="settings-section">
+                        <div class="section-title">📊 Display Options</div>
+                        <div class="setting-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="timerDisplay" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Show Timer</span>
+                            </label>
+                        </div>
+                        <div class="setting-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="accuracyDisplay" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Show Accuracy Percentage</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Gameplay Options Section -->
+                    <div class="settings-section">
+                        <div class="section-title">🎮 Gameplay</div>
+                        <div class="setting-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoCheck">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Auto-check answers (instant feedback)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="settings-actions">
+                        <button id="saveSettingsBtn" class="save-button">✓ Save Settings</button>
+                        <button id="resetBtn" class="reset-button">↻ Reset to Default</button>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="successMessage" class="settings-message success-message" style="display: none;">
+                        ✓ Settings saved successfully!
+                    </div>
                 </div>
-                <div class="setting-group">
-                    <label for="notificationsToggle">
-                        <input type="checkbox" id="notificationsToggle" checked>
-                        Enable Notifications
-                    </label>
-                </div>
-                <div class="setting-group">
-                    <label for="problemsPerSession">Problems per session:</label>
-                    <input type="number" id="problemsPerSession" min="5" max="50" value="10">
-                </div>
-                <div class="setting-group">
-                    <label for="difficultyLevel">Difficulty:</label>
-                    <select id="difficultyLevel">
-                        <option value="easy">Easy</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </div>
-                <button id="saveSettingsBtn" class="submit-button">Save Settings</button>
-                <button id="resetBtn" class="reset-button">Reset to Default</button>
             </div>
-            <button id="backBtn" class="back-button">← Back to Home</button>
         </div>
     </main>
     <script src="app.js"></script>
+    <script src="settings.js"></script>
 </body>
 </html>

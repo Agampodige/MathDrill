@@ -121,10 +121,16 @@ class LevelsManager {
             starsHtml += '</div>';
         }
 
-        // Create lock badge if locked
+        // Create lock badge and unlock overlay if locked
         let lockHtml = '';
+        let unlockOverlay = '';
         if (level.isLocked) {
             lockHtml = '<div class="lock-badge">🔒</div>';
+            const starsNeeded = this.extractStarsNeeded(level.unlockCondition);
+            if (starsNeeded) {
+                const starIcon = starsNeeded === 1 ? '⭐' : '⭐'.repeat(Math.min(starsNeeded, 5));
+                unlockOverlay = `<div class="lock-overlay"><div class="unlock-text">${starsNeeded} ${starsNeeded === 1 ? 'Star' : 'Stars'} Needed<br>${starIcon}</div></div>`;
+            }
         }
 
         // Create difficulty badge
@@ -144,6 +150,7 @@ class LevelsManager {
             ${completionText}
             ${starsHtml}
             ${lockHtml}
+            ${unlockOverlay}
         `;
 
         // Add click handler only if unlocked
@@ -154,6 +161,19 @@ class LevelsManager {
 
         return card;
     }
+
+    extractStarsNeeded(unlockCondition) {
+        // Extract number from "total_stars_X" format
+        if (unlockCondition && unlockCondition.startsWith('total_stars_')) {
+            try {
+                return parseInt(unlockCondition.split('_')[2]);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     getDifficultyColor(difficulty) {
         const colors = {
@@ -175,6 +195,15 @@ class LevelsManager {
         document.getElementById('totalStars').textContent = this.stats.totalStars || 0;
         document.getElementById('completedCount').textContent = this.stats.completedLevels || 0;
         document.getElementById('totalCount').textContent = this.stats.totalLevels || 0;
+        
+        // Calculate and update progress percentage
+        const totalLevels = this.stats.totalLevels || 0;
+        const completedLevels = this.stats.completedLevels || 0;
+        const progressPercentage = totalLevels > 0 ? Math.round((completedLevels / totalLevels) * 100) : 0;
+        
+        document.getElementById('progressPercentage').textContent = progressPercentage + '%';
+        document.getElementById('progressText').textContent = progressPercentage + '%';
+        document.getElementById('progressFill').style.width = progressPercentage + '%';
     }
 }
 

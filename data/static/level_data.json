@@ -9,9 +9,9 @@
       "difficulty": "Easy",
       "requirements": {
         "totalQuestions": 5,
-        "minAccuracy": 60,
+        "minAccuracy": 80,
         "timeLimit": null,
-        "minCorrect": 3
+        "minCorrect": 4
       },
       "rewards": {
         "starsPerQuestion": 1,
@@ -20,7 +20,12 @@
         "pointsReward": 10
       },
       "unlockCondition": "none",
-      "description_long": "Get comfortable with adding single digit numbers. You need to answer at least 3 out of 5 questions correctly."
+      "description_long": "Get comfortable with adding single digit numbers. You need to answer at least 4 out of 5 questions correctly.",
+        "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 80
+      }
     },
     {
       "id": 2,
@@ -31,9 +36,9 @@
       "difficulty": "Easy",
       "requirements": {
         "totalQuestions": 8,
-        "minAccuracy": 70,
+        "minAccuracy": 80,
         "timeLimit": null,
-        "minCorrect": 6
+        "minCorrect": 7
       },
       "rewards": {
         "starsPerQuestion": 1,
@@ -41,7 +46,12 @@
         "unlocksLevel": 3,
         "pointsReward": 20
       },
-      "unlockCondition": "complete_level_1_with_1_star"
+      "unlockCondition": "total_stars_1",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 80
+      }
     },
     {
       "id": 3,
@@ -52,9 +62,9 @@
       "difficulty": "Medium",
       "requirements": {
         "totalQuestions": 10,
-        "minAccuracy": 75,
+        "minAccuracy": 85,
         "timeLimit": null,
-        "minCorrect": 8
+        "minCorrect": 9
       },
       "rewards": {
         "starsPerQuestion": 1,
@@ -62,154 +72,611 @@
         "unlocksLevel": 4,
         "pointsReward": 30
       },
-      "unlockCondition": "complete_level_2_with_1_star"
+      "unlockCondition": "total_stars_3",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 85
+      }
     },
     {
       "id": 4,
-      "name": "Subtraction Start",
-      "description": "Learn basic subtraction with two digits",
-      "operation": "subtraction",
-      "digits": 2,
-      "difficulty": "Easy",
+      "name": "Mega Numbers",
+      "description": "Add four-digit numbers",
+      "operation": "addition",
+      "digits": 4,
+      "difficulty": "Hard",
       "requirements": {
-        "totalQuestions": 8,
-        "minAccuracy": 70,
+        "totalQuestions": 12,
+        "minAccuracy": 88,
         "timeLimit": null,
-        "minCorrect": 6
+        "minCorrect": 11
       },
       "rewards": {
         "starsPerQuestion": 1,
         "maxStars": 3,
         "unlocksLevel": 5,
-        "pointsReward": 20
+        "pointsReward": 40
       },
-      "unlockCondition": "complete_level_3_with_1_star"
+      "unlockCondition": "total_stars_6",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 88
+      }
     },
     {
       "id": 5,
-      "name": "Multiply Basics",
-      "description": "Master multiplication tables",
-      "operation": "multiplication",
-      "digits": 2,
-      "difficulty": "Medium",
-      "requirements": {
-        "totalQuestions": 10,
-        "minAccuracy": 75,
-        "timeLimit": null,
-        "minCorrect": 8
-      },
-      "rewards": {
-        "starsPerQuestion": 1,
-        "maxStars": 3,
-        "unlocksLevel": 6,
-        "pointsReward": 30
-      },
-      "unlockCondition": "complete_level_4_with_1_star"
-    },
-    {
-      "id": 6,
-      "name": "Division Training",
-      "description": "Get comfortable with division",
-      "operation": "division",
-      "digits": 2,
-      "difficulty": "Medium",
-      "requirements": {
-        "totalQuestions": 10,
-        "minAccuracy": 75,
-        "timeLimit": null,
-        "minCorrect": 8
-      },
-      "rewards": {
-        "starsPerQuestion": 1,
-        "maxStars": 3,
-        "unlocksLevel": 7,
-        "pointsReward": 30
-      },
-      "unlockCondition": "complete_level_5_with_1_star"
-    },
-    {
-      "id": 7,
-      "name": "Mixed Operations",
-      "description": "Solve problems with multiple operations",
-      "operation": "complex",
-      "digits": 2,
-      "difficulty": "Hard",
-      "requirements": {
-        "totalQuestions": 12,
-        "minAccuracy": 80,
-        "timeLimit": null,
-        "minCorrect": 10
-      },
-      "rewards": {
-        "starsPerQuestion": 2,
-        "maxStars": 3,
-        "unlocksLevel": 8,
-        "pointsReward": 50
-      },
-      "unlockCondition": "complete_level_6_with_1_star"
-    },
-    {
-      "id": 8,
-      "name": "Speed Challenge",
-      "description": "Complete addition within time limit",
+      "name": "Addition Speed Run",
+      "description": "Add numbers quickly under time pressure",
       "operation": "addition",
       "digits": 2,
       "difficulty": "Hard",
       "requirements": {
         "totalQuestions": 10,
-        "minAccuracy": 80,
-        "timeLimit": 30,
-        "minCorrect": 8
+        "minAccuracy": 88,
+        "timeLimit": 45,
+        "minCorrect": 9
       },
       "rewards": {
         "starsPerQuestion": 2,
         "maxStars": 3,
-        "unlocksLevel": 9,
+        "unlocksLevel": 6,
         "pointsReward": 50
       },
-      "unlockCondition": "collect_7_stars_from_levels_1_to_6"
+      "unlockCondition": "total_stars_9",
+      "starThresholds": {
+        "gold": 99,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 6,
+      "name": "Subtraction Start",
+      "description": "Learn basic subtraction with single digits",
+      "operation": "subtraction",
+      "digits": 1,
+      "difficulty": "Easy",
+      "requirements": {
+        "totalQuestions": 8,
+        "minAccuracy": 80,
+        "timeLimit": null,
+        "minCorrect": 7
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 7,
+        "pointsReward": 15
+      },
+      "unlockCondition": "total_stars_3",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 80
+      }
+    },
+    {
+      "id": 7,
+      "name": "Two Digit Minus",
+      "description": "Subtract two-digit numbers",
+      "operation": "subtraction",
+      "digits": 2,
+      "difficulty": "Easy",
+      "requirements": {
+        "totalQuestions": 8,
+        "minAccuracy": 82,
+        "timeLimit": null,
+        "minCorrect": 7
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 8,
+        "pointsReward": 20
+      },
+      "unlockCondition": "total_stars_6",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 82
+      }
+    },
+    {
+      "id": 8,
+      "name": "Three Digit Minus",
+      "description": "Subtract three-digit numbers",
+      "operation": "subtraction",
+      "digits": 3,
+      "difficulty": "Medium",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 85,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 9,
+        "pointsReward": 30
+      },
+      "unlockCondition": "total_stars_9",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 85
+      }
     },
     {
       "id": 9,
-      "name": "Expert Mixed",
-      "description": "Expert level complex operations",
+      "name": "Subtraction Mastery",
+      "description": "Advanced subtraction with four digits",
+      "operation": "subtraction",
+      "digits": 4,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 12,
+        "minAccuracy": 88,
+        "timeLimit": null,
+        "minCorrect": 11
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 10,
+        "pointsReward": 40
+      },
+      "unlockCondition": "total_stars_12",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 10,
+      "name": "Multiply Basics",
+      "description": "Master simple multiplication tables",
+      "operation": "multiplication",
+      "digits": 1,
+      "difficulty": "Easy",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 82,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 11,
+        "pointsReward": 20
+      },
+      "unlockCondition": "total_stars_9",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 82
+      }
+    },
+    {
+      "id": 11,
+      "name": "Two Digit Multiply",
+      "description": "Multiply two-digit numbers",
+      "operation": "multiplication",
+      "digits": 2,
+      "difficulty": "Medium",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 85,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 12,
+        "pointsReward": 30
+      },
+      "unlockCondition": "total_stars_12",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 85
+      }
+    },
+    {
+      "id": 12,
+      "name": "Multiplication Master",
+      "description": "Multiply three-digit numbers",
+      "operation": "multiplication",
+      "digits": 3,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 12,
+        "minAccuracy": 88,
+        "timeLimit": null,
+        "minCorrect": 11
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 13,
+        "pointsReward": 40
+      },
+      "unlockCondition": "total_stars_15",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 13,
+      "name": "Division Basics",
+      "description": "Learn basic division",
+      "operation": "division",
+      "digits": 1,
+      "difficulty": "Easy",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 82,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 14,
+        "pointsReward": 20
+      },
+      "unlockCondition": "total_stars_12",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 82
+      }
+    },
+    {
+      "id": 14,
+      "name": "Two Digit Divide",
+      "description": "Divide two-digit numbers",
+      "operation": "division",
+      "digits": 2,
+      "difficulty": "Medium",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 85,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 15,
+        "pointsReward": 30
+      },
+      "unlockCondition": "total_stars_15",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 85
+      }
+    },
+    {
+      "id": 15,
+      "name": "Division Master",
+      "description": "Divide three-digit numbers",
+      "operation": "division",
+      "digits": 3,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 12,
+        "minAccuracy": 88,
+        "timeLimit": null,
+        "minCorrect": 11
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 16,
+        "pointsReward": 40
+      },
+      "unlockCondition": "total_stars_18",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 16,
+      "name": "Mixed Ops Intro",
+      "description": "Solve problems with two operations",
+      "operation": "complex",
+      "digits": 1,
+      "difficulty": "Medium",
+      "requirements": {
+        "totalQuestions": 10,
+        "minAccuracy": 85,
+        "timeLimit": null,
+        "minCorrect": 9
+      },
+      "rewards": {
+        "starsPerQuestion": 1,
+        "maxStars": 3,
+        "unlocksLevel": 17,
+        "pointsReward": 35
+      },
+      "unlockCondition": "total_stars_15",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 93,
+        "bronze": 85
+      }
+    },
+    {
+      "id": 17,
+      "name": "Complex Operations",
+      "description": "Multiple operations with two digits",
+      "operation": "complex",
+      "digits": 2,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 12,
+        "minAccuracy": 88,
+        "timeLimit": null,
+        "minCorrect": 11
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 18,
+        "pointsReward": 50
+      },
+      "unlockCondition": "total_stars_18",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 18,
+      "name": "Advanced Mixed Math",
+      "description": "Complex operations with three digits",
       "operation": "complex",
       "digits": 3,
       "difficulty": "Hard",
       "requirements": {
-        "totalQuestions": 15,
-        "minAccuracy": 85,
+        "totalQuestions": 14,
+        "minAccuracy": 90,
         "timeLimit": null,
         "minCorrect": 13
       },
       "rewards": {
         "starsPerQuestion": 2,
         "maxStars": 3,
-        "unlocksLevel": 10,
-        "pointsReward": 75
+        "unlocksLevel": 19,
+        "pointsReward": 60
       },
-      "unlockCondition": "complete_level_8_with_2_stars"
+      "unlockCondition": "total_stars_21",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 90
+      }
     },
     {
-      "id": 10,
+      "id": 19,
+      "name": "Expert Complex",
+      "description": "Expert level complex operations",
+      "operation": "complex",
+      "digits": 3,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 15,
+        "minAccuracy": 91,
+        "timeLimit": null,
+        "minCorrect": 14
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 20,
+        "pointsReward": 75
+      },
+      "unlockCondition": "total_stars_24",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 91
+      }
+    },
+    {
+      "id": 20,
+      "name": "Speed Challenge Plus",
+      "description": "Complete complex operations quickly",
+      "operation": "complex",
+      "digits": 2,
+      "difficulty": "Hard",
+      "requirements": {
+        "totalQuestions": 12,
+        "minAccuracy": 88,
+        "timeLimit": 60,
+        "minCorrect": 11
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 21,
+        "pointsReward": 70
+      },
+      "unlockCondition": "total_stars_18",
+      "starThresholds": {
+        "gold": 99,
+        "silver": 94,
+        "bronze": 88
+      }
+    },
+    {
+      "id": 21,
+      "name": "Addition Extreme",
+      "description": "Large number addition challenge",
+      "operation": "addition",
+      "digits": 4,
+      "difficulty": "Extreme",
+      "requirements": {
+        "totalQuestions": 15,
+        "minAccuracy": 91,
+        "timeLimit": null,
+        "minCorrect": 14
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 22,
+        "pointsReward": 80
+      },
+      "unlockCondition": "total_stars_27",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 91
+      }
+    },
+    {
+      "id": 22,
+      "name": "Subtraction Extreme",
+      "description": "Large number subtraction challenge",
+      "operation": "subtraction",
+      "digits": 4,
+      "difficulty": "Extreme",
+      "requirements": {
+        "totalQuestions": 15,
+        "minAccuracy": 91,
+        "timeLimit": null,
+        "minCorrect": 14
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 23,
+        "pointsReward": 80
+      },
+      "unlockCondition": "total_stars_27",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 91
+      }
+    },
+    {
+      "id": 23,
+      "name": "Multiplication Extreme",
+      "description": "Four-digit multiplication challenge",
+      "operation": "multiplication",
+      "digits": 4,
+      "difficulty": "Extreme",
+      "requirements": {
+        "totalQuestions": 15,
+        "minAccuracy": 91,
+        "timeLimit": null,
+        "minCorrect": 14
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 24,
+        "pointsReward": 80
+      },
+      "unlockCondition": "total_stars_27",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 91
+      }
+    },
+    {
+      "id": 24,
+      "name": "Division Extreme",
+      "description": "Four-digit division challenge",
+      "operation": "division",
+      "digits": 4,
+      "difficulty": "Extreme",
+      "requirements": {
+        "totalQuestions": 15,
+        "minAccuracy": 91,
+        "timeLimit": null,
+        "minCorrect": 14
+      },
+      "rewards": {
+        "starsPerQuestion": 2,
+        "maxStars": 3,
+        "unlocksLevel": 25,
+        "pointsReward": 80
+      },
+      "unlockCondition": "total_stars_27",
+      "starThresholds": {
+        "gold": 98,
+        "silver": 94,
+        "bronze": 91
+      }
+    },
+    {
+      "id": 25,
       "name": "Master Challenge",
-      "description": "The ultimate math challenge",
+      "description": "The ultimate math challenge with all operations",
       "operation": "complex",
       "digits": 4,
       "difficulty": "Extreme",
       "requirements": {
         "totalQuestions": 20,
-        "minAccuracy": 90,
+        "minAccuracy": 93,
         "timeLimit": null,
+        "minCorrect": 19
+      },
+      "rewards": {
+        "starsPerQuestion": 3,
+        "maxStars": 3,
+        "unlocksLevel": 26,
+        "pointsReward": 150
+      },
+      "unlockCondition": "total_stars_33",
+      "starThresholds": {
+        "gold": 99,
+        "silver": 95,
+        "bronze": 93
+      }
+    },
+    {
+      "id": 26,
+      "name": "Legendary Speed Run",
+      "description": "Complete 20 extreme operations in 120 seconds",
+      "operation": "complex",
+      "digits": 4,
+      "difficulty": "Extreme",
+      "requirements": {
+        "totalQuestions": 20,
+        "minAccuracy": 92,
+        "timeLimit": 120,
         "minCorrect": 18
       },
       "rewards": {
         "starsPerQuestion": 3,
         "maxStars": 3,
         "unlocksLevel": null,
-        "pointsReward": 100
+        "pointsReward": 200
       },
-      "unlockCondition": "complete_level_9_with_2_stars"
+      "unlockCondition": "total_stars_39",
+      "starThresholds": {
+        "gold": 99,
+        "silver": 94,
+        "bronze": 92
+      }
     }
   ]
 }
+   

@@ -53,9 +53,13 @@ class LevelProgress {
                 this.startLevel();
             } else if (data.type === 'complete_level_response') {
                 const result = data.payload;
+                console.log('DEBUG: Complete level response received:', result);
                 if (result.success) {
                     console.log('✓ Level completed with', result.starsEarned, 'stars');
+                    console.log('DEBUG: Calling showCompletionModal with:', result);
                     this.showCompletionModal(result);
+                } else {
+                    console.error('Level completion failed:', result.error);
                 }
             } else if (data.type === 'error') {
                 console.error('Error from Python:', data.payload.message);
@@ -410,7 +414,17 @@ class LevelProgress {
         const displayQuestion = this.currentQuestion + 1;
         const progress = (displayQuestion / this.questions.length) * 100;
         document.getElementById('progressBar').style.width = progress + '%';
-        document.getElementById('progressText').textContent = `${displayQuestion}/${this.questions.length}`;
+        
+        // Update progress text in both locations
+        const progressText = `${displayQuestion}/${this.questions.length}`;
+        const progressElement = document.getElementById('progressText');
+        if (progressElement) {
+            progressElement.textContent = progressText;
+        }
+        const progressText2 = document.getElementById('progressText2');
+        if (progressText2) {
+            progressText2.textContent = progressText;
+        }
 
         // Update accuracy
         const accuracy = this.questions.length > 0 
@@ -422,9 +436,13 @@ class LevelProgress {
     updateStarsEstimate() {
         const accuracy = (this.correctAnswers / (this.currentQuestion + 1)) * 100;
 
-        if (accuracy >= 95) {
+        // Stricter thresholds to match backend
+        // 3 stars: 98%+ (near perfect)
+        // 2 stars: 93-97% (very good)
+        // 1 star: below 93% (acceptable but needs improvement)
+        if (accuracy >= 98) {
             this.estimatedStars = 3;
-        } else if (accuracy >= 85) {
+        } else if (accuracy >= 93) {
             this.estimatedStars = 2;
         } else {
             this.estimatedStars = 1;
@@ -493,6 +511,8 @@ class LevelProgress {
     }
 
     showCompletionModal(result) {
+        console.log('DEBUG: showCompletionModal called with result:', result);
+        
         const accuracy = result.accuracy || 0;
         const starsEarned = result.starsEarned || 1;
         const timeTaken = Math.round(result.timeTaken || 0);
@@ -526,13 +546,32 @@ class LevelProgress {
         const nextLevelBtn = document.getElementById('nextLevelBtn');
         if (result.nextLevelId) {
             nextLevelBtn.style.display = 'inline-block';
+            console.log('DEBUG: Next level ID found:', result.nextLevelId);
         } else {
             nextLevelBtn.style.display = 'none';
+            console.log('DEBUG: No next level ID');
         }
 
         // Show modal
-        document.getElementById('modalOverlay').style.display = 'block';
-        document.getElementById('completionModal').style.display = 'block';
+        const modalOverlay = document.getElementById('modalOverlay');
+        const completionModal = document.getElementById('completionModal');
+        
+        console.log('DEBUG: Modal overlay element:', modalOverlay);
+        console.log('DEBUG: Completion modal element:', completionModal);
+        
+        if (modalOverlay) {
+            modalOverlay.style.display = 'block';
+            console.log('DEBUG: Modal overlay display set to block');
+        } else {
+            console.error('DEBUG: Modal overlay element not found!');
+        }
+        
+        if (completionModal) {
+            completionModal.style.display = 'block';
+            console.log('DEBUG: Completion modal display set to block');
+        } else {
+            console.error('DEBUG: Completion modal element not found!');
+        }
     }
 
     goToNextLevel() {

@@ -47,6 +47,10 @@ class Bridge(QObject):
                 self._handle_complete_level(payload)
             elif msg_type == 'get_level_progress':
                 self._handle_get_level_progress(payload)
+            elif msg_type == 'save_settings':
+                self._handle_save_settings(payload)
+            elif msg_type == 'load_settings':
+                self._handle_load_settings(payload)
             else:
                 self.messageReceived.emit(json.dumps({
                     'type': 'error',
@@ -308,3 +312,80 @@ class Bridge(QObject):
             'type': 'connection_test',
             'payload': {'status': 'success'}
         }))
+
+    def _handle_save_settings(self, payload):
+        """Handle save settings request"""
+        try:
+            if not self.levels_manager:
+                raise Exception('Levels manager not initialized')
+            
+            settings_data = payload.get('settings', {})
+            
+            # Get the settings file path
+            addon_folder = os.path.dirname(__file__)
+            settings_file = os.path.join(addon_folder, "data", "user", "setting.json")
+            
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(settings_file), exist_ok=True)
+            
+            # Save settings to JSON file
+            with open(settings_file, 'w', encoding='utf-8') as f:
+                json.dump(settings_data, f, indent=2, ensure_ascii=False)
+            
+            print(f"DEBUG: Settings saved to {settings_file}")
+            
+            response = {
+                'type': 'save_settings_response',
+                'payload': {
+                    'success': True,
+                    'message': 'Settings saved successfully'
+                }
+            }
+            self.messageReceived.emit(json.dumps(response))
+        except Exception as e:
+            import traceback
+            print(f"ERROR in _handle_save_settings: {e}")
+            traceback.print_exc()
+            response = {
+                'type': 'error',
+                'payload': {
+                    'message': f'Error saving settings: {str(e)}'
+                }
+            }
+            self.messageReceived.emit(json.dumps(response))
+    
+    def _handle_load_settings(self, payload):
+        """Handle load settings request"""
+        try:
+            addon_folder = os.path.dirname(__file__)
+            settings_file = os.path.join(addon_folder, "data", "user", "setting.json")
+            
+            settings_data = {}
+            
+            # Load settings if file exists
+            if os.path.exists(settings_file):
+                with open(settings_file, 'r', encoding='utf-8') as f:
+                    settings_data = json.load(f)
+                print(f"DEBUG: Settings loaded from {settings_file}")
+            else:
+                print(f"DEBUG: Settings file not found at {settings_file}, returning empty")
+            
+            response = {
+                'type': 'load_settings_response',
+                'payload': {
+                    'settings': settings_data,
+                    'success': True
+                }
+            }
+            self.messageReceived.emit(json.dumps(response))
+        except Exception as e:
+            import traceback
+            print(f"ERROR in _handle_load_settings: {e}")
+            traceback.print_exc()
+            response = {
+                'type': 'error',
+                'payload': {
+                    'message': f'Error loading settings: {str(e)}'
+                }
+            }
+            self.messageReceived.emit(json.dumps(response))

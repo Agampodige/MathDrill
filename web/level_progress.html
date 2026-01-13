@@ -8,64 +8,70 @@
 </head>
 <body>
     <div class="level-progress-container">
-        <!-- Header -->
-        <div class="level-header">
-            <button id="backButton" class="back-button">← Back to Levels</button>
-            <h1 id="levelTitle">Loading...</h1>
-            <p id="levelDescription" class="level-description"></p>
-        </div>
-
-        <!-- Progress Information -->
-        <div class="progress-info-bar">
-            <div class="progress-stat">
-                <span class="stat-label">Progress</span>
-                <span id="progressText" class="stat-value">0/0</span>
+        <!-- Top Navigation Bar -->
+        <div class="level-nav-bar">
+            <button id="backButton" class="back-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <div class="level-title-section">
+                <h1 id="levelTitle">Loading...</h1>
             </div>
-            <div class="progress-stat">
-                <span class="stat-label">Accuracy</span>
-                <span id="accuracyText" class="stat-value">0%</span>
-            </div>
-            <div class="progress-stat" id="timerStatDiv" style="display:none;">
-                <span class="stat-label">Time Left</span>
-                <span id="timerText" class="stat-value">--:--</span>
+            <div class="level-stats-compact">
+                <div class="stat-badge">
+                    <span id="progressText" class="badge-value">0/0</span>
+                </div>
+                <div class="stat-badge">
+                    <span id="accuracyText" class="badge-value">0%</span>
+                </div>
+                <div class="stat-badge" id="timerStatDiv" style="display:none;">
+                    <span id="timerText" class="badge-value">--:--</span>
+                </div>
             </div>
         </div>
 
         <!-- Progress Bar -->
         <div class="progress-bar-container">
-            <div id="progressBar" class="progress-bar"></div>
+            <div id="progressBar" class="progress-bar">
+                <span class="progress-text" id="progressText2"></span>
+            </div>
         </div>
 
         <!-- Main Practice Area -->
         <div id="practiceArea" class="level-practice-area">
             <!-- Question Display -->
-            <div class="question-container">
+            <div class="question-section">
                 <div id="questionDisplay" class="question-display">
                     <div class="question-prompt" id="questionPrompt">0 + 0 = ?</div>
                 </div>
+                
+                <!-- Level Description -->
+                <p id="levelDescription" class="level-description-text"></p>
             </div>
 
-            <!-- Answer Input -->
-            <div class="answer-input-container">
+            <!-- Answer Input Section -->
+            <div class="input-section">
                 <input 
                     type="number" 
                     id="answerInput" 
                     class="answer-input" 
-                    placeholder="Enter your answer"
+                    placeholder="Your answer"
                     autocomplete="off"
                 >
-                <button id="submitButton" class="submit-button">Submit</button>
+                <button id="submitButton" class="submit-button">
+                    <span>Submit</span>
+                </button>
             </div>
 
             <!-- Feedback Area -->
             <div id="feedbackArea" class="feedback-area" style="display: none;">
                 <div id="feedbackMessage" class="feedback-message"></div>
-                <button id="nextButton" class="next-button">Next Question</button>
+                <button id="nextButton" class="next-button">Continue</button>
             </div>
 
-            <!-- Stars Counter -->
-            <div class="stars-counter">
-                <span class="stars-label">Stars:</span>
+            <!-- Stars Progress -->
+            <div class="stars-progress">
                 <div id="starsDisplay" class="stars-display">
                     <span class="star empty">☆</span>
                     <span class="star empty">☆</span>

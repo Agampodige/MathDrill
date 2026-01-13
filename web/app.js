@@ -23,18 +23,30 @@ function setupNavigation() {
             navigateToHome();
         });
     });
+    
+    // Setup theme toggle button
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleTheme();
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     setupNavigation();
     initializeTheme();
+    setupThemeListener();
+    updateThemeToggleIcon();
 });
 
 // Also setup on window load as backup
 window.addEventListener('load', function() {
     console.log('Window Load');
     setupNavigation();
+    updateThemeToggleIcon();
 });
 
 function navigateToPage(pageName) {
@@ -55,22 +67,80 @@ function navigateToHome() {
     window.location.href = 'index.html';
 }
 
-// Theme Management (for future customization)
+// Theme Management with Auto Detection
 function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || 'auto';
     applyTheme(savedTheme);
 }
 
 function applyTheme(themeName) {
     const body = document.body;
+    let effectiveTheme = themeName;
     
-    if (themeName === 'dark') {
+    // Handle auto theme detection
+    if (themeName === 'auto') {
+        effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    
+    // Apply theme
+    if (effectiveTheme === 'dark') {
         body.classList.add('dark-theme');
     } else {
         body.classList.remove('dark-theme');
     }
     
+    // Save preference
     localStorage.setItem('theme', themeName);
+    
+    // Update theme select if it exists
+    const themeSelect = document.getElementById('themeSelect');
+    if (themeSelect) {
+        themeSelect.value = themeName;
+    }
+}
+
+// Listen for system theme changes when set to auto
+function setupThemeListener() {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addListener((e) => {
+        const currentTheme = localStorage.getItem('theme') || 'auto';
+        if (currentTheme === 'auto') {
+            applyTheme('auto');
+        }
+    });
+}
+
+// Toggle between light and dark themes
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'auto';
+    let newTheme = 'light';
+    
+    if (currentTheme === 'light') {
+        newTheme = 'dark';
+    } else if (currentTheme === 'dark') {
+        newTheme = 'auto';
+    }
+    
+    applyTheme(newTheme);
+    updateThemeToggleIcon();
+}
+
+// Update theme toggle button icon
+function updateThemeToggleIcon() {
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        const currentTheme = localStorage.getItem('theme') || 'auto';
+        const body = document.body;
+        let icon = '🌙'; // light mode icon
+        
+        if (body.classList.contains('dark-theme')) {
+            icon = '☀️'; // dark mode icon
+        } else {
+            icon = '🌙'; // light mode icon
+        }
+        
+        themeToggleBtn.textContent = icon;
+    }
 }
 
 // Python Bridge Integration (for Anki addon)
@@ -111,6 +181,21 @@ function handlePythonMessage(message) {
                 break;
             case 'data_response':
                 console.log(`📊 Received data: `, payload);
+                break;
+            case 'load_settings_response':
+                console.log(`⚙️ Settings loaded from backend:`, payload.settings);
+                if (payload.settings && Object.keys(payload.settings).length > 0) {
+                    // Merge backend settings with localStorage
+                    const currentSettings = loadSettings ? loadSettings() : {};
+                    const mergedSettings = { ...currentSettings, ...payload.settings };
+                    localStorage.setItem('appSettings', JSON.stringify(mergedSettings));
+                    if (typeof applySettings === 'function') {
+                        applySettings(mergedSettings);
+                    }
+                }
+                break;
+            case 'save_settings_response':
+                console.log(`✓ Settings saved to backend`);
                 break;
             default:
                 console.log('Unknown message type:', type);

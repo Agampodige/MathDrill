@@ -119,13 +119,25 @@ class LevelsManager:
         return None
 
     def _is_level_unlocked(self, level: Dict) -> bool:
-        """Check if a level is unlocked based on unlock condition"""
+        """Check if a level is unlocked based on total stars earned"""
         unlock_condition = level.get('unlockCondition', 'none')
         
         if unlock_condition == 'none':
             return True
         
-        # Parse unlock condition (e.g., "complete_level_1_with_1_star")
+        # Parse total stars unlock condition (e.g., "total_stars_10")
+        if unlock_condition.startswith('total_stars_'):
+            try:
+                required_total_stars = int(unlock_condition.split('_')[2])
+                total_stars_earned = sum(
+                    completion.get('starsEarned', 0) 
+                    for completion in self.completions.values()
+                )
+                return total_stars_earned >= required_total_stars
+            except (IndexError, ValueError):
+                pass
+        
+        # Fallback for old format (legacy support)
         if unlock_condition.startswith('complete_level_'):
             parts = unlock_condition.split('_')
             try:
@@ -138,7 +150,7 @@ class LevelsManager:
             except (IndexError, ValueError):
                 pass
         
-        # Parse "collect_X_stars_from_levels_1_to_Y"
+        # Fallback for collect format (legacy support)
         elif unlock_condition.startswith('collect_'):
             parts = unlock_condition.split('_')
             try:
@@ -190,18 +202,21 @@ class LevelsManager:
         # Calculate accuracy
         accuracy = (correct_answers / total_questions) * 100
         
-        # Calculate stars (1-3)
+        # Calculate stars (1-3) with stricter thresholds
+        # 3 stars: 98%+ accuracy (near perfect, only 1 mistake per 50 questions)
+        # 2 stars: 93-97% accuracy (very good, only 1-3 mistakes per 50 questions)  
+        # 1 star: minAccuracy to 92% (acceptable, must meet minimum requirement)
         stars = 1
         
-        if accuracy >= 95:
+        if accuracy >= 98:
             stars = 3
-        elif accuracy >= 85:
+        elif accuracy >= 93:
             stars = 2
         
         # Check time constraint if applicable
         if requirements['timeLimit']:
             if time_taken > requirements['timeLimit']:
-                # Still complete but reduce stars
+                # Penalize stars if time limit exceeded
                 stars = max(1, stars - 1)
         
         # Check if this is a new record

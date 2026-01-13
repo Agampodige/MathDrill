@@ -1,196 +1,137 @@
-"""
-Attempts Manager - Handles saving and loading practice mode attempts
-"""
 import json
 import os
 from datetime import datetime
-from pathlib import Path
+from typing import Any, Dict, List
 
 
 class AttemptsManager:
-    """Manage practice mode attempts data"""
-    
-    def __init__(self, addon_folder):
-        """Initialize the attempts manager
-        
-        Args:
-            addon_folder (str): Path to the addon folder
-        """
-        self.addon_folder = addon_folder
-        self.attempts_file = os.path.join(addon_folder, 'data','user', 'attempts.json')
-        self._ensure_data_folder()
-    
-    def _ensure_data_folder(self):
-        """Ensure the data folder exists"""
-        data_folder = os.path.dirname(self.attempts_file)
-        if not os.path.exists(data_folder):
-            os.makedirs(data_folder, exist_ok=True)
-    
-    def save_attempts(self, attempts_data):
-        """Save attempts to file
-        
-        Args:
-            attempts_data (dict): Dictionary with 'lastId' and 'attempts' list
-            
-        Returns:
-            dict: Response with status
+    """Manages saving/loading of attempts and computing basic statistics."""
+
+    def __init__(self, addon_path: str):
+        self.addon_path = addon_path
+        self.data_dir = os.path.join(addon_path, "data")
+        self.static_file = os.path.join(self.data_dir, "attempts.json")
+        self.user_file = os.path.join(self.data_dir, "user", "attempts.json")
+
+        os.makedirs(os.path.dirname(self.user_file), exist_ok=True)
+
+        self.attempts_data: Dict[str, Any] = self.load_attempts()
+
+    def _default_structure(self) -> Dict[str, Any]:
+        return {"lastId": 0, "attempts": [], "lastSaved": "", "totalAttempts": 0}
+
+    def load_attempts(self) -> Dict[str, Any]:
+        """Load attempts from user file if present, otherwise fall back to static file or empty structure."""
+        try:
+            if os.path.exists(self.user_file):
+                with open(self.user_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                print(f"Loaded user attempts from {self.user_file}")
+                return data
+
+            if os.path.exists(self.static_file):
+                with open(self.static_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                print(f"Loaded static attempts from {self.static_file}")
+                return data
+
+            print(f"  No attempts file found, using empty structure")
+            return self._default_structure()
+        except Exception as e:
+            print(f"Error loading attempts: {e}")
+            return self._default_structure()
+
+    def save_attempts(self, attempts_payload: Any) -> Dict[str, Any]:
+        """Save incoming attempts to the user attempts file.
+
+        Accepts either a single attempt dict, a list of attempts, or a dict with key 'attempts'.
+        Returns a summary dict with success flag and counts.
         """
         try:
-            self._ensure_data_folder()
-            
-            # Prepare data structure
-            save_data = {
-                'lastId': attempts_data.get('lastId', 0),
-                'attempts': attempts_data.get('attempts', []),
-                'lastSaved': datetime.now().isoformat(),
-                'totalAttempts': len(attempts_data.get('attempts', []))
-            }
-            
-            # Write to file
-            with open(self.attempts_file, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, indent=2, ensure_ascii=False)
-            
-            return {
-                'status': 'success',
-                'message': f'Saved {save_data["totalAttempts"]} attempts',
-                'lastId': save_data['lastId']
-            }
+            # Normalize incoming attempts to a list
+            if isinstance(attempts_payload, dict) and "attempts" in attempts_payload:
+                new_attempts = attempts_payload.get("attempts", [])
+            elif isinstance(attempts_payload, list):
+                new_attempts = attempts_payload
+            elif isinstance(attempts_payload, dict):
+                new_attempts = [attempts_payload]
+            else:
+                return {"success": False, "message": "Unsupported payload format"}
+
+            if not new_attempts:
+                return {"success": True, "added": 0, "message": "No attempts to add"}
+
+            data = self.load_attempts()
+            last_id = data.get("lastId", 0)
+            attempts_list: List[Dict[str, Any]] = data.get("attempts", [])
+
+            added_count = 0
+            for attempt in new_attempts:
+                # Assign an id if missing or conflicting
+                if not isinstance(attempt, dict):
+                    continue
+
+                if "id" not in attempt or attempt["id"] in [a.get("id") for a in attempts_list]:
+                    last_id += 1
+                    attempt["id"] = last_id
+
+                attempts_list.append(attempt)
+                added_count += 1
+
+            # Update summary fields
+            data["attempts"] = attempts_list
+            data["lastId"] = last_id
+            data["lastSaved"] = datetime.now().isoformat()
+            data["totalAttempts"] = len(attempts_list)
+
+            # Ensure directory
+            os.makedirs(os.path.dirname(self.user_file), exist_ok=True)
+            with open(self.user_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+
+            self.attempts_data = data
+
+            print(f"Saved {added_count} new attempts to {self.user_file}")
+            return {"success": True, "added": added_count, "totalAttempts": data["totalAttempts"]}
+
         except Exception as e:
-            return {
-                'status': 'error',
-                'message': f'Failed to save attempts: {str(e)}'
-            }
-    
-    def load_attempts(self):
-        """Load attempts from file
-        
-        Returns:
-            dict: Dictionary with 'lastId' and 'attempts' list
-        """
-        try:
-            if not os.path.exists(self.attempts_file):
-                return {
-                    'lastId': 0,
-                    'attempts': [],
-                    'message': 'No previous attempts found'
-                }
-            
-            with open(self.attempts_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            
-            return {
-                'lastId': data.get('lastId', 0),
-                'attempts': data.get('attempts', []),
-                'totalAttempts': len(data.get('attempts', [])),
-                'lastSaved': data.get('lastSaved', '')
-            }
-        except Exception as e:
-            return {
-                'lastId': 0,
-                'attempts': [],
-                'error': f'Failed to load attempts: {str(e)}'
-            }
-    
-    def get_attempt_statistics(self):
-        """Get statistics from all attempts
-        
-        Returns:
-            dict: Statistics including accuracy, average time, etc.
-        """
+            print(f"Error saving attempts: {e}")
+            return {"success": False, "message": str(e)}
+
+    def get_attempt_statistics(self) -> Dict[str, Any]:
+        """Compute basic statistics from available attempts."""
         try:
             data = self.load_attempts()
-            attempts = data.get('attempts', [])
-            
-            if not attempts:
-                return {
-                    'totalAttempts': 0,
-                    'correctCount': 0,
-                    'accuracy': 0,
-                    'avgTime': 0,
-                    'byOperation': {}
-                }
-            
-            # Calculate overall stats
-            correct_count = sum(1 for a in attempts if a.get('isCorrect', False))
-            total_time = sum(a.get('timeTaken', 0) for a in attempts)
-            avg_time = total_time / len(attempts) if attempts else 0
-            accuracy = (correct_count / len(attempts) * 100) if attempts else 0
-            
-            # Stats by operation
-            by_operation = {}
-            for attempt in attempts:
-                op = attempt.get('operation', 'unknown')
-                if op not in by_operation:
-                    by_operation[op] = {
-                        'count': 0,
-                        'correct': 0,
-                        'totalTime': 0
-                    }
-                
-                by_operation[op]['count'] += 1
-                if attempt.get('isCorrect', False):
-                    by_operation[op]['correct'] += 1
-                by_operation[op]['totalTime'] += attempt.get('timeTaken', 0)
-            
-            # Calculate operation accuracy
-            for op in by_operation:
-                op_data = by_operation[op]
-                op_data['accuracy'] = (op_data['correct'] / op_data['count'] * 100) if op_data['count'] > 0 else 0
-                op_data['avgTime'] = op_data['totalTime'] / op_data['count'] if op_data['count'] > 0 else 0
-                del op_data['totalTime']
-            
+            attempts = data.get("attempts", [])
+            total = len(attempts)
+            if total == 0:
+                return {"totalAttempts": 0, "correctCount": 0, "incorrectCount": 0, "accuracy": 0.0, "averageTime": 0.0}
+
+            correct = sum(1 for a in attempts if a.get("isCorrect"))
+            incorrect = total - correct
+            avg_time = sum((a.get("timeTaken", 0) or 0) for a in attempts) / total
+            accuracy = (correct / total) * 100 if total > 0 else 0.0
+
+            by_op = {}
+            for a in attempts:
+                op = a.get("operation", "unknown")
+                by_op.setdefault(op, {"attempts": 0, "correct": 0})
+                by_op[op]["attempts"] += 1
+                if a.get("isCorrect"):
+                    by_op[op]["correct"] += 1
+
+            # Convert by_op to include accuracy
+            for op, stats in by_op.items():
+                stats["accuracy"] = (stats["correct"] / stats["attempts"] * 100) if stats["attempts"] > 0 else 0.0
+
             return {
-                'totalAttempts': len(attempts),
-                'correctCount': correct_count,
-                'accuracy': round(accuracy, 2),
-                'avgTime': round(avg_time, 2),
-                'byOperation': by_operation
+                "totalAttempts": total,
+                "correctCount": correct,
+                "incorrectCount": incorrect,
+                "accuracy": accuracy,
+                "averageTime": avg_time,
+                "byOperation": by_op,
             }
         except Exception as e:
-            return {
-                'error': f'Failed to calculate statistics: {str(e)}'
-            }
-    
-    def get_attempts_by_operation(self, operation):
-        """Get all attempts for a specific operation
-        
-        Args:
-            operation (str): Operation type (addition, subtraction, etc.)
-            
-        Returns:
-            list: List of attempts for the operation
-        """
-        try:
-            data = self.load_attempts()
-            attempts = data.get('attempts', [])
-            return [a for a in attempts if a.get('operation') == operation]
-        except Exception as e:
-            return []
-    
-    def clear_attempts(self):
-        """Clear all attempts (use with caution!)
-        
-        Returns:
-            dict: Response with status
-        """
-        try:
-            if os.path.exists(self.attempts_file):
-                os.remove(self.attempts_file)
-            
-            return {
-                'status': 'success',
-                'message': 'All attempts cleared'
-            }
-        except Exception as e:
-            return {
-                'status': 'error',
-                'message': f'Failed to clear attempts: {str(e)}'
-            }
-    
-    def get_file_path(self):
-        """Get the attempts file path
-        
-        Returns:
-            str: Full path to attempts.json
-        """
-        return self.attempts_file
+            print(f"Error computing attempt statistics: {e}")
+            return {"error": str(e)}

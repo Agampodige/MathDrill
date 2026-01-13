@@ -10,51 +10,62 @@
     <main>
         <div class="page-container active">
             <!-- Modern Header -->
-            <div class="levels-header">
-                <div class="header-content">
-                    <h1 class="page-title">🏆 Levels</h1>
-                    <p class="page-subtitle">Progress through math challenges</p>
+            <div class="levels-container">
+                <!-- Navigation Bar -->
+                <div class="levels-nav-bar">
+                    <button id="backBtn" class="levels-back-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h1 class="levels-title">Math Challenges</h1>
+                    <div class="levels-spacer"></div>
                 </div>
-                
-                <!-- Stats Cards -->
-                <div class="stats-cards">
-                    <div class="stat-card">
+
+                <!-- Stats Section -->
+                <div class="levels-stats-section">
+                    <div class="stat-item">
                         <div class="stat-icon">⭐</div>
-                        <div class="stat-info">
+                        <div class="stat-details">
                             <span class="stat-value" id="totalStars">0</span>
-                            <span class="stat-label">Stars</span>
+                            <span class="stat-name">Stars Earned</span>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-info">
+                    <div class="stat-item">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-details">
                             <span class="stat-value"><span id="completedCount">0</span>/<span id="totalCount">0</span></span>
-                            <span class="stat-label">Completed</span>
+                            <span class="stat-name">Completed</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-details">
+                            <span class="stat-value" id="progressPercentage">0%</span>
+                            <span class="stat-name">Progress</span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Levels Grid -->
-            <div id="levelsContainer" class="levels-grid">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>Loading levels...</p>
+                <!-- Progress Bar -->
+                <div class="overall-progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Overall Progress</span>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Levels Grid -->
+                <div id="levelsContainer" class="levels-grid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading levels...</p>
+                    </div>
                 </div>
             </div>
-
-            <!-- Progress Bar -->
-            <div class="overall-progress">
-                <div class="progress-info">
-                    <span class="progress-label">Overall Progress</span>
-                    <span class="progress-percentage" id="progressPercentage">0%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <button id="backBtn" class="back-button">← Back to Home</button>
         </div>
     </main>
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>

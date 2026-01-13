@@ -8,6 +8,7 @@ class PracticeMode {
         this.attempts = [];
         this.lastQuestionId = 0;
         this.timerInterval = null;
+        this.countdownInterval = null;
         this.questionStartTime = 0;
         this.isPracticing = false;
         this.operation = 'addition';
@@ -24,8 +25,9 @@ class PracticeMode {
         document.getElementById('stopBtn')?.addEventListener('click', () => this.stopPractice());
         document.getElementById('submitBtn')?.addEventListener('click', () => this.submitAnswer());
         document.getElementById('nextBtn')?.addEventListener('click', () => this.skipAutoAdvance());
-        document.getElementById('answerInput')?.addEventListener('keypress', (e) => {
+        document.getElementById('answerInput')?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !document.getElementById('submitBtn').disabled) {
+                e.preventDefault();
                 this.submitAnswer();
             }
         });
@@ -37,6 +39,10 @@ class PracticeMode {
         if (this.autoAdvanceTimer) {
             clearTimeout(this.autoAdvanceTimer);
             this.autoAdvanceTimer = null;
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
         }
         this.generateNextQuestion();
     }
@@ -72,6 +78,7 @@ class PracticeMode {
         // Clear timers
         if (this.timerInterval) clearInterval(this.timerInterval);
         if (this.autoAdvanceTimer) clearTimeout(this.autoAdvanceTimer);
+        if (this.countdownInterval) { clearInterval(this.countdownInterval); this.countdownInterval = null; }
         
         // Show settings, hide practice area
         document.getElementById('settingsPanel').style.display = 'block';
@@ -353,48 +360,56 @@ class PracticeMode {
         feedbackBox.style.display = 'block';
         this.feedbackShown = true;
 
-        // Auto-advance after a delay (1.5s for correct, 2s for incorrect)
-        const delay = isCorrect ? 1500 : 2000;
+        // Auto-advance after a shorter delay (0.8s for correct, 1.2s for incorrect)
+        const delay = isCorrect ? 800 : 1200;
         const nextBtn = document.getElementById('nextBtn');
         
-        // Clear any existing timer
+        // Clear any existing timers
         if (this.autoAdvanceTimer) {
             clearTimeout(this.autoAdvanceTimer);
+            this.autoAdvanceTimer = null;
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
         }
         
-        // Show countdown on button
-        let remaining = Math.ceil(delay / 1000);
         const originalText = 'Next Question';
-        let countdownInterval;
+        const endTime = Date.now() + delay;
         
         const updateCountdown = () => {
-            if (remaining > 0) {
-                nextBtn.textContent = `Next Question (${remaining}s)`;
+            const remainingMs = Math.max(0, endTime - Date.now());
+            if (remainingMs >= 1000) {
+                const remainingSec = Math.ceil(remainingMs / 1000);
+                nextBtn.textContent = `Next Question (${remainingSec}s)`;
             } else {
-                nextBtn.textContent = originalText;
-                if (countdownInterval) clearInterval(countdownInterval);
+                nextBtn.textContent = `Next Question (${(remainingMs / 1000).toFixed(1)}s)`;
             }
         };
         
         updateCountdown();
+        this.countdownInterval = setInterval(updateCountdown, 100);
+        nextBtn.disabled = false; // allow immediate skipping by user
         
-        countdownInterval = setInterval(() => {
-            remaining--;
-            updateCountdown();
-        }, 1000);
-
         this.autoAdvanceTimer = setTimeout(() => {
-            if (countdownInterval) clearInterval(countdownInterval);
+            if (this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+            }
             nextBtn.textContent = originalText;
             this.generateNextQuestion();
         }, delay);
     }
 
     hideFeedback() {
-        // Clear any auto-advance timers
+        // Clear any auto-advance timers and countdowns
         if (this.autoAdvanceTimer) {
             clearTimeout(this.autoAdvanceTimer);
             this.autoAdvanceTimer = null;
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
         }
         document.getElementById('feedbackBox').style.display = 'none';
         this.feedbackShown = false;
