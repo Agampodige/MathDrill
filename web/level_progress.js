@@ -25,7 +25,7 @@ class LevelProgress {
             if (typeof QWebChannel !== 'undefined' && typeof qt !== 'undefined') {
                 new QWebChannel(qt.webChannelTransport, (channel) => {
                     window.pybridge = channel.objects.pybridge;
-                    
+
                     if (window.pybridge && window.pybridge.messageReceived) {
                         window.pybridge.messageReceived.connect((response) => {
                             this.handlePythonResponse(response);
@@ -44,7 +44,7 @@ class LevelProgress {
             console.log('📩 Received response:', response.substring(0, 200));
             const data = JSON.parse(response);
             console.log('✓ Parsed response type:', data.type);
-            
+
             if (data.type === 'get_level_response') {
                 this.currentLevel = data.payload;
                 console.log('✓ Loaded level:', this.currentLevel.name);
@@ -54,13 +54,9 @@ class LevelProgress {
             } else if (data.type === 'complete_level_response') {
                 const result = data.payload;
                 console.log('DEBUG: Complete level response received:', result);
-                if (result.success) {
-                    console.log('✓ Level completed with', result.starsEarned, 'stars');
-                    console.log('DEBUG: Calling showCompletionModal with:', result);
-                    this.showCompletionModal(result);
-                } else {
-                    console.error('Level completion failed:', result.error);
-                }
+                // Always show modal, whether success or failure
+                console.log('DEBUG: Calling showCompletionModal with:', result);
+                this.showCompletionModal(result);
             } else if (data.type === 'error') {
                 console.error('Error from Python:', data.payload.message);
                 document.getElementById('levelTitle').textContent = 'Error: ' + data.payload.message;
@@ -357,10 +353,10 @@ class LevelProgress {
             // For the last question, show feedback and then complete level
             const delay = isCorrect ? 1500 : 2000;
             console.log('DEBUG: Final question, completing level after', delay, 'ms');
-            
+
             // Ensure feedback is visible
             this.showFeedback(isCorrect);
-            
+
             setTimeout(() => {
                 console.log('DEBUG: Calling completeLevel()');
                 this.completeLevel();
@@ -414,7 +410,7 @@ class LevelProgress {
         const displayQuestion = this.currentQuestion + 1;
         const progress = (displayQuestion / this.questions.length) * 100;
         document.getElementById('progressBar').style.width = progress + '%';
-        
+
         // Update progress text in both locations
         const progressText = `${displayQuestion}/${this.questions.length}`;
         const progressElement = document.getElementById('progressText');
@@ -427,8 +423,8 @@ class LevelProgress {
         }
 
         // Update accuracy
-        const accuracy = this.questions.length > 0 
-            ? Math.round((this.correctAnswers / displayQuestion) * 100) 
+        const accuracy = this.questions.length > 0
+            ? Math.round((this.correctAnswers / displayQuestion) * 100)
             : 0;
         document.getElementById('accuracyText').textContent = accuracy + '%';
     }
@@ -480,7 +476,7 @@ class LevelProgress {
 
         const minutes = Math.floor(this.levelTimeRemaining / 60);
         const seconds = this.levelTimeRemaining % 60;
-        document.getElementById('timerText').textContent = 
+        document.getElementById('timerText').textContent =
             `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
@@ -512,60 +508,85 @@ class LevelProgress {
 
     showCompletionModal(result) {
         console.log('DEBUG: showCompletionModal called with result:', result);
-        
-        const accuracy = result.accuracy || 0;
-        const starsEarned = result.starsEarned || 1;
+
+        const accuracy = result.accuracy !== undefined ? result.accuracy : 0;
+        const starsEarned = result.starsEarned !== undefined ? result.starsEarned : 0;
         const timeTaken = Math.round(result.timeTaken || 0);
 
         // Update modal content
         document.getElementById('finalAccuracy').textContent = Math.round(accuracy) + '%';
         document.getElementById('finalTime').textContent = timeTaken + 's';
 
+        // Update Modal Title
+        const modalTitle = document.querySelector('#completionModal h2');
+        if (modalTitle) {
+            modalTitle.textContent = result.success ? 'Level Complete!' : 'Level Failed';
+            modalTitle.style.color = result.success ? 'var(--text-color)' : 'var(--danger-color)';
+        }
+
         // Display earned stars
         const earnedStarsDiv = document.getElementById('earnedStars');
         earnedStarsDiv.innerHTML = '';
-        for (let i = 0; i < starsEarned; i++) {
-            const star = document.createElement('span');
-            star.className = 'star-lg';
-            star.textContent = '★';
-            earnedStarsDiv.appendChild(star);
+
+        if (result.success) {
+            for (let i = 0; i < starsEarned; i++) {
+                const star = document.createElement('span');
+                star.className = 'star-lg';
+                star.textContent = '★';
+                earnedStarsDiv.appendChild(star);
+            }
+        } else {
+            // Show empty stars or a sad face for failure? 
+            // Let's just show 3 empty large stars to indicate 0 earned
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('span');
+                star.className = 'star-lg empty';
+                star.textContent = '☆';
+                star.style.color = '#ccc'; // Grey out
+                earnedStarsDiv.appendChild(star);
+            }
         }
 
         // Update completion text
-        let message = 'Great job!';
-        if (starsEarned === 3) {
-            message = 'Perfect! You earned 3 stars!';
-        } else if (starsEarned === 2) {
-            message = 'Excellent! You earned 2 stars!';
-        } else if (starsEarned === 1) {
-            message = 'Good effort! You earned 1 star!';
+        let message = '';
+        if (!result.success) {
+            message = result.error || 'Keep practicing! You can do it!';
+        } else {
+            if (starsEarned === 3) {
+                message = 'Perfect! You earned 3 stars!';
+            } else if (starsEarned === 2) {
+                message = 'Excellent! You earned 2 stars!';
+            } else {
+                message = 'Good effort! You earned 1 star!';
+            }
         }
         document.getElementById('completionText').textContent = message;
 
         // Show/hide next level button
         const nextLevelBtn = document.getElementById('nextLevelBtn');
-        if (result.nextLevelId) {
+        // Only show next level button if success AND there is a next level
+        if (result.success && result.nextLevelId) {
             nextLevelBtn.style.display = 'inline-block';
             console.log('DEBUG: Next level ID found:', result.nextLevelId);
         } else {
             nextLevelBtn.style.display = 'none';
-            console.log('DEBUG: No next level ID');
+            console.log('DEBUG: No next level or level failed');
         }
 
         // Show modal
         const modalOverlay = document.getElementById('modalOverlay');
         const completionModal = document.getElementById('completionModal');
-        
+
         console.log('DEBUG: Modal overlay element:', modalOverlay);
         console.log('DEBUG: Completion modal element:', completionModal);
-        
+
         if (modalOverlay) {
             modalOverlay.style.display = 'block';
             console.log('DEBUG: Modal overlay display set to block');
         } else {
             console.error('DEBUG: Modal overlay element not found!');
         }
-        
+
         if (completionModal) {
             completionModal.style.display = 'block';
             console.log('DEBUG: Completion modal display set to block');
@@ -591,6 +612,6 @@ class LevelProgress {
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     window.levelProgress = new LevelProgress();
 });
