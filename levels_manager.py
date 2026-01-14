@@ -219,26 +219,49 @@ class LevelsManager:
                 # Penalize stars if time limit exceeded
                 stars = max(1, stars - 1)
         
-        # Check if this is a new record
-        is_new_record = True
+        # Check against previous best to decide if we should save
+        previous_stars = 0
+        previous_accuracy = 0.0
+        previous_time = float('inf')
+        
         if level_id in self.completions:
-            previous = self.completions[level_id]
-            is_new_record = stars > previous.get('starsEarned', 0)
+            prev = self.completions[level_id]
+            previous_stars = prev.get('starsEarned', 0)
+            previous_accuracy = prev.get('bestAccuracy', 0.0)
+            previous_time = prev.get('bestTime', float('inf'))
+            if previous_time == 0: previous_time = float('inf')
+
+        is_new_record = stars > previous_stars
+
+        # Deciding whether to save this run as the new "best"
+        # We save if:
+        # 1. More stars
+        # 2. Same stars, better accuracy
+        # 3. Same stars, same accuracy, better time
         
-        # Save completion
-        completion_data = {
-            'levelId': level_id,
-            'starsEarned': stars,
-            'correctAnswers': correct_answers,
-            'totalQuestions': total_questions,
-            'bestAccuracy': accuracy,
-            'bestTime': time_taken,
-            'completionDate': datetime.now().isoformat(),
-            'isNewRecord': is_new_record
-        }
-        
-        self.completions[level_id] = completion_data
-        self.save_completions()
+        save_this_run = False
+        if stars > previous_stars:
+            save_this_run = True
+        elif stars == previous_stars:
+            if accuracy > previous_accuracy:
+                save_this_run = True
+            elif abs(accuracy - previous_accuracy) < 0.01: # Float comparison
+                if time_taken < previous_time:
+                    save_this_run = True
+
+        if save_this_run:
+            completion_data = {
+                'levelId': level_id,
+                'starsEarned': stars,
+                'correctAnswers': correct_answers,
+                'totalQuestions': total_questions,
+                'bestAccuracy': accuracy,
+                'bestTime': time_taken,
+                'completionDate': datetime.now().isoformat(),
+                'isNewRecord': is_new_record
+            }
+            self.completions[level_id] = completion_data
+            self.save_completions()
         
         return {
             'success': True,
