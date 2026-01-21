@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics</title>
     <script src="chart.min.js"></script>
+    <link href="analytics.css" rel="stylesheet">
 </head>
 
 <body>
@@ -59,17 +60,62 @@
             <!-- Activity Heatmap -->
             <div class="analytics-section">
                 <h2 class="section-title">Activity Heatmap</h2>
-                <div class="heatmap-container" id="activityHeatmap">
-                    <div id="heatmapGrid" class="heatmap-grid"></div>
-                    <div class="heatmap-legend">
-                        <span>Less</span>
-                        <div class="legend-item" data-level="0" style="background-color: rgba(255, 255, 255, 0.05);">
+                <div class="heatmap-wrapper">
+                    <div class="heatmap-labels-months" id="heatmapMonths"></div>
+                    <div class="heatmap-body">
+                        <div class="heatmap-labels-days">
+                            <span>Mon</span>
+                            <span>Wed</span>
+                            <span>Fri</span>
                         </div>
-                        <div class="legend-item" data-level="1" style="background-color: #0e4429;"></div>
-                        <div class="legend-item" data-level="2" style="background-color: #006d32;"></div>
-                        <div class="legend-item" data-level="3" style="background-color: #26a641;"></div>
-                        <div class="legend-item" data-level="4" style="background-color: #39d353;"></div>
-                        <span>More</span>
+                        <div class="heatmap-container" id="activityHeatmap">
+                            <div id="heatmapGrid" class="heatmap-grid"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="heatmap-legend">
+                    <span>Less</span>
+                    <div class="legend-item" data-level="0" style="background-color: rgba(255, 255, 255, 0.05);">
+                    </div>
+                    <div class="legend-item" data-level="1" style="background-color: #0e4429;"></div>
+                    <div class="legend-item" data-level="2" style="background-color: #006d32;"></div>
+                    <div class="legend-item" data-level="3" style="background-color: #26a641;"></div>
+                    <div class="legend-item" data-level="4" style="background-color: #39d353;"></div>
+                    <span>More</span>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="analytics-section">
+                <h2 class="section-title">Performance Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-icon">🔥</div>
+                        <div class="insight-details">
+                            <span class="insight-label">Current Streak</span>
+                            <span class="insight-value" id="currentStreak">0 Days</span>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">🏆</div>
+                        <div class="insight-details">
+                            <span class="insight-label">Best Streak</span>
+                            <span class="insight-value" id="bestStreak">0 Days</span>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">⭐</div>
+                        <div class="insight-details">
+                            <span class="insight-label">Top Operation</span>
+                            <span class="insight-value" id="topOperation">-</span>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">📈</div>
+                        <div class="insight-details">
+                            <span class="insight-label">Focus Area</span>
+                            <span class="insight-value" id="focusArea">-</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,6 +148,29 @@
                             <canvas id="trendChart"></canvas>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="analytics-section">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="recent-activity-container">
+                    <table class="recent-activity-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Operation</th>
+                                <th>Problem</th>
+                                <th>Result</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentActivityBody">
+                            <tr>
+                                <td colspan="5" class="empty-row">No recent activity</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

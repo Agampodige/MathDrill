@@ -116,14 +116,20 @@ class AttemptsManager:
             date_counts = {}
             for attempt in attempts:
                 # Get timestamp from attempt
-                timestamp = attempt.get("timestamp")
-                if not timestamp:
+                ts = attempt.get("timestamp") or attempt.get("date")
+                if not ts:
                     continue
                 
                 try:
-                    # Convert timestamp to date string
+                    # Convert timestamp/date to date string
                     from datetime import datetime
-                    date_obj = datetime.fromtimestamp(timestamp)
+                    if isinstance(ts, (int, float)):
+                        date_obj = datetime.fromtimestamp(ts)
+                    else:
+                        # Try parsing string format (ISO)
+                        ts_str = str(ts).replace("Z", "+00:00")
+                        date_obj = datetime.fromisoformat(ts_str)
+                        
                     date_str = date_obj.strftime("%Y-%m-%d")
                     
                     # Increment count for this date

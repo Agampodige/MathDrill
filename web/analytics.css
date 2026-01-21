@@ -1,0 +1,170 @@
+/* ============================================
+   ANALYTICS ENHANCEMENTS
+   ============================================ */
+
+/* Heatmap Labels */
+.heatmap-wrapper {
+    margin: var(--spacing-xl) 0;
+    overflow-x: auto;
+}
+
+.heatmap-labels-months {
+    display: flex;
+    padding-left: 40px;
+    /* Space for day labels */
+    height: 20px;
+    margin-bottom: var(--spacing-xs);
+    color: #9ca3af;
+    font-size: 10px;
+}
+
+.heatmap-month {
+    flex: 1;
+    min-width: 40px;
+}
+
+.heatmap-body {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.heatmap-labels-days {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 0;
+    color: #9ca3af;
+    font-size: 10px;
+    height: 110px;
+    /* Match grid height */
+}
+
+/* Insights Grid */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.insight-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    transition: all 0.25s ease;
+}
+
+.insight-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    border-color: #10b981;
+}
+
+.insight-icon {
+    font-size: 2rem;
+    background: rgba(16, 185, 129, 0.1);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.insight-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.insight-label {
+    color: #9ca3af;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.insight-value {
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+/* Recent Activity Table */
+.recent-activity-container {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    margin-top: var(--spacing-md);
+}
+
+.recent-activity-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.recent-activity-table th {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    color: #b0b0b0;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.recent-activity-table td {
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    font-size: 13px;
+}
+
+.recent-activity-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.result-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.result-tag.correct {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.result-tag.incorrect {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.empty-row {
+    text-align: center;
+    color: #9ca3af;
+    padding: 40px !important;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+
+    .recent-activity-table th:nth-child(1),
+    .recent-activity-table td:nth-child(1) {
+        display: none;
+        /* Hide date on small screens */
+    }
+
+    .heatmap-labels-days {
+        display: none;
+    }
+
+    .heatmap-labels-months {
+        padding-left: 0;
+    }
+}

@@ -71,6 +71,9 @@ class AnalyticsManager {
 
         // Display charts
         this.displayCharts();
+
+        // Render Activity Heatmap (fallback path)
+        this.renderActivityHeatmap(this.attempts);
     }
 
     displayOperationStatsFromLocal() {
@@ -131,84 +134,96 @@ class AnalyticsManager {
         // Render trend chart using the attempts we just received
         this.createTrendChart(this.attempts);
 
+        // Render Insights & Streaks
+        this.renderInsights(this.attempts, stats.byOperation || {});
+
+        // Render Recent Activity
+        this.renderRecentActivity(this.attempts);
+
         // Render Activity Heatmap
         this.renderActivityHeatmap(this.attempts);
     }
 
     renderActivityHeatmap(attempts) {
         const grid = document.getElementById('heatmapGrid');
+        const monthsContainer = document.getElementById('heatmapMonths');
         if (!grid) return;
 
         grid.innerHTML = '';
+        if (monthsContainer) monthsContainer.innerHTML = '';
 
         try {
             // 1. Process attempts into day map "YYYY-MM-DD" -> count
             const counts = {};
             attempts.forEach(a => {
                 let date;
-                if (a.timestamp) {
-                    // Handle timestamp in seconds (Python time.time())
-                    try {
-                        date = new Date(a.timestamp * 1000);
-                        // Validate date
-                        if (isNaN(date.getTime())) {
-                            return; // Skip invalid dates
-                        }
-                    } catch (e) {
-                        return; // Skip on error
-                    }
-                } else if (a.date) {
-                    try {
-                        date = new Date(a.date);
-                        if (isNaN(date.getTime())) {
-                            return;
-                        }
-                    } catch (e) {
-                        return;
-                    }
-                } else {
-                    return; // Skip if no date/timestamp
-                }
+                const ts = a.timestamp || a.date;
+                if (!ts) return;
 
-                const dayStr = date.toISOString().split('T')[0];
+                try {
+                    if (typeof ts === 'number') {
+                        date = new Date(ts * 1000);
+                    } else {
+                        date = new Date(ts);
+                    }
+                    if (isNaN(date.getTime())) return;
+                } catch (e) { return; }
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dayStr = `${year}-${month}-${day}`;
                 counts[dayStr] = (counts[dayStr] || 0) + 1;
             });
 
             // 2. Generate last 364 days (52 weeks)
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalize to start of day
+            today.setHours(0, 0, 0, 0);
 
             const squares = [];
+            const monthLabels = [];
+            let lastMonth = -1;
+
             for (let i = 0; i < 364; i++) {
                 const d = new Date(today);
-                d.setDate(today.getDate() - (363 - i)); // 363 days ago to today
+                d.setDate(today.getDate() - (363 - i));
+
+                const month = d.getMonth();
+                if (month !== lastMonth && i % 7 === 0) {
+                    const monthName = d.toLocaleDateString('en-US', { month: 'short' });
+                    monthLabels.push({ name: monthName, index: i });
+                    lastMonth = month;
+                }
+
                 const dayStr = d.toISOString().split('T')[0];
                 const count = counts[dayStr] || 0;
 
-                // Determine intensity level (0-4)
                 let level = 0;
                 if (count > 0) level = 1;
                 if (count > 4) level = 2;
                 if (count > 9) level = 3;
                 if (count > 14) level = 4;
 
-                // Format date for tooltip
-                const dateObj = new Date(dayStr);
-                const formattedDate = dateObj.toLocaleDateString('en-US', {
+                const formattedDate = d.toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric'
                 });
 
-                squares.push({
-                    date: dayStr,
-                    formattedDate,
-                    count,
-                    level
+                squares.push({ date: dayStr, formattedDate, count, level });
+            }
+
+            // 3. Render Month Labels
+            if (monthsContainer) {
+                monthLabels.forEach(ml => {
+                    const el = document.createElement('div');
+                    el.className = 'heatmap-month';
+                    el.textContent = ml.name;
+                    monthsContainer.appendChild(el);
                 });
             }
 
-            // 3. Render cells
+            // 4. Render cells
             squares.forEach(sq => {
                 const el = document.createElement('div');
                 el.className = 'heatmap-cell';
@@ -220,6 +235,143 @@ class AnalyticsManager {
             console.error('Error rendering heatmap:', error);
             grid.innerHTML = '<p style="color: #9ca3af; padding: 20px; text-align: center;">Unable to render heatmap</p>';
         }
+    }
+
+    renderInsights(attempts, byOperation) {
+        // Calculate Streaks
+        const streaks = this.calculateStreaks(attempts);
+        document.getElementById('currentStreak').textContent = `${streaks.current} Day${streaks.current !== 1 ? 's' : ''}`;
+        document.getElementById('bestStreak').textContent = `${streaks.best} Day${streaks.best !== 1 ? 's' : ''}`;
+
+        // Top Operation (Highest Accuracy with significant attempts)
+        let topOp = '-';
+        let maxAcc = -1;
+        Object.entries(byOperation).forEach(([op, data]) => {
+            if (data.count >= 5 && data.accuracy > maxAcc) {
+                maxAcc = data.accuracy;
+                topOp = this.getOperationDisplay(op);
+            }
+        });
+        document.getElementById('topOperation').textContent = topOp;
+
+        // Focus Area (Lowest Accuracy or most incorrect)
+        let focusOp = '-';
+        let minAcc = 101;
+        Object.entries(byOperation).forEach(([op, data]) => {
+            if (data.count >= 3 && data.accuracy < minAcc) {
+                minAcc = data.accuracy;
+                focusOp = this.getOperationDisplay(op);
+            }
+        });
+        document.getElementById('focusArea').textContent = focusOp;
+    }
+
+    calculateStreaks(attempts) {
+        if (!attempts || attempts.length === 0) return { current: 0, best: 0 };
+
+        const getLocalDateString = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const dates = new Set();
+        attempts.forEach(a => {
+            const ts = a.timestamp || a.date;
+            if (!ts) return;
+            const date = typeof ts === 'number' ? new Date(ts * 1000) : new Date(ts);
+            if (!isNaN(date.getTime())) {
+                dates.add(getLocalDateString(date));
+            }
+        });
+
+        const sortedDates = Array.from(dates).sort().reverse();
+        if (sortedDates.length === 0) return { current: 0, best: 0 };
+
+        // Current Streak
+        let current = 0;
+        const now = new Date();
+        const today = getLocalDateString(now);
+        const yesterdayDate = new Date(now);
+        yesterdayDate.setDate(now.getDate() - 1);
+        const yesterday = getLocalDateString(yesterdayDate);
+
+        let startDateIdx = -1;
+        if (sortedDates[0] === today) startDateIdx = 0;
+        else if (sortedDates[0] === yesterday) startDateIdx = 0;
+
+        if (startDateIdx !== -1) {
+            current = 1;
+            for (let i = startDateIdx; i < sortedDates.length - 1; i++) {
+                const d1 = new Date(sortedDates[i]);
+                const d2 = new Date(sortedDates[i + 1]);
+                // Need to use UTC normalization for comparison to avoid DST issues
+                d1.setHours(12, 0, 0, 0);
+                d2.setHours(12, 0, 0, 0);
+                const diff = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+                if (diff === 1) current++;
+                else break;
+            }
+        }
+
+        // Best Streak
+        let best = 0;
+        let tempStreak = 1;
+        const sortedAsc = [...sortedDates].reverse();
+        for (let i = 0; i < sortedAsc.length - 1; i++) {
+            const d1 = new Date(sortedAsc[i]);
+            const d2 = new Date(sortedAsc[i + 1]);
+            d1.setHours(12, 0, 0, 0);
+            d2.setHours(12, 0, 0, 0);
+            const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+            if (diff === 1) tempStreak++;
+            else {
+                best = Math.max(best, tempStreak);
+                tempStreak = 1;
+            }
+        }
+        best = Math.max(best, tempStreak);
+
+        return { current, best };
+    }
+
+    renderRecentActivity(attempts) {
+        const container = document.getElementById('recentActivityBody');
+        if (!container) return;
+
+        if (!attempts || attempts.length === 0) {
+            container.innerHTML = '<tr><td colspan="5" class="empty-row">No recent activity</td></tr>';
+            return;
+        }
+
+        // Sort by timestamp descending
+        const sorted = [...attempts].sort((a, b) => {
+            const t1 = a.timestamp || 0;
+            const t2 = b.timestamp || 0;
+            return t2 - t1;
+        }).slice(0, 10);
+
+        container.innerHTML = sorted.map(a => {
+            const date = a.timestamp ?
+                new Date(typeof a.timestamp === 'number' ? a.timestamp * 1000 : a.timestamp) :
+                new Date();
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            return `
+                <tr>
+                    <td>${dateStr}</td>
+                    <td>${this.getOperationDisplay(a.operation)}</td>
+                    <td class="font-mono">${a.problem}</td>
+                    <td>
+                        <span class="result-tag ${a.isCorrect ? 'correct' : 'incorrect'}">
+                            ${a.isCorrect ? 'Correct' : 'Incorrect'}
+                        </span>
+                    </td>
+                    <td>${(a.timeTaken || 0).toFixed(1)}s</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     renderOperationStats(byOperation) {
@@ -555,7 +707,7 @@ class AnalyticsManager {
                 a.correctAnswer || '',
                 a.isCorrect ? 'Yes' : 'No',
                 (a.timeTaken || 0).toFixed(2),
-                a.timestamp ? new Date(a.timestamp * 1000).toISOString() : ''
+                a.timestamp ? (typeof a.timestamp === 'number' ? new Date(a.timestamp * 1000).toISOString() : new Date(a.timestamp).toISOString()) : ''
             ];
             csv += row.join(',') + '\n';
         });
