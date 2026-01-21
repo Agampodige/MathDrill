@@ -76,6 +76,18 @@ function loadSettingsFromBackend() {
 document.addEventListener('DOMContentLoaded', function () {
     const settings = loadSettings();
     applySettings(settings);
+    updateUI(settings);
+
+    // Initial load from backend to ensure data is fresh
+    if (window.pybridge) {
+        loadSettingsFromBackend();
+    }
+    window.addEventListener('pybridge-connected', () => {
+        loadSettingsFromBackend();
+        if (window.pybridge) {
+            window.pybridge.messageReceived.connect(window.handleBridgeMessage);
+        }
+    });
 
     // UI Elements
     const themeToggle = document.getElementById('themeToggle');
@@ -89,9 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const resetBtn = document.getElementById('resetBtn');
     const backBtn = document.getElementById('backBtn');
 
-    // Set form values
+    // Theme toggle change handler
     if (themeToggle) {
-        themeToggle.checked = settings.theme === 'dark' || settings.theme === 'auto';
         themeToggle.addEventListener('change', (e) => {
             const theme = e.target.checked ? 'dark' : 'light';
             if (window.applyTheme) {
@@ -99,12 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    if (soundToggle) soundToggle.checked = settings.soundEnabled;
-    if (notificationsToggle) notificationsToggle.checked = settings.notificationsEnabled;
-    if (timerDisplay) timerDisplay.checked = settings.showTimer;
-    if (accuracyDisplay) accuracyDisplay.checked = settings.showAccuracy;
-    if (autoCheck) autoCheck.checked = settings.autoCheckAnswers;
-    if (adaptiveToggle) adaptiveToggle.checked = settings.adaptiveDifficulty || false;
 
     // Back button handler
     if (backBtn) {
@@ -124,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 showAccuracy: accuracyDisplay?.checked ?? true,
                 autoCheckAnswers: autoCheck?.checked ?? false,
                 adaptiveDifficulty: adaptiveToggle?.checked ?? false,
-                // Keep default values for removed settings to avoid breaking other parts of the app
                 problemsPerSession: settings.problemsPerSession || 10,
                 difficultyLevel: settings.difficultyLevel || 'medium',
                 darkMode: themeToggle?.checked ?? true
@@ -133,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
             saveSettings(newSettings);
             applySettings(newSettings);
             showSuccessMessage('Settings saved successfully!');
-
             console.log('Settings saved:', newSettings);
         });
     }
@@ -144,34 +147,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirm('Are you sure you want to reset all settings to default?')) {
                 saveSettings(DEFAULT_SETTINGS);
                 applySettings(DEFAULT_SETTINGS);
-
-                // Update form
-                if (themeToggle) themeToggle.checked = DEFAULT_SETTINGS.theme === 'dark' || DEFAULT_SETTINGS.theme === 'auto';
-                if (soundToggle) soundToggle.checked = DEFAULT_SETTINGS.soundEnabled;
-                if (notificationsToggle) notificationsToggle.checked = DEFAULT_SETTINGS.notificationsEnabled;
-                if (timerDisplay) timerDisplay.checked = DEFAULT_SETTINGS.showTimer;
-                if (accuracyDisplay) accuracyDisplay.checked = DEFAULT_SETTINGS.showAccuracy;
-                if (autoCheck) autoCheck.checked = DEFAULT_SETTINGS.autoCheckAnswers;
-                if (adaptiveToggle) adaptiveToggle.checked = DEFAULT_SETTINGS.adaptiveDifficulty;
-
-                // Apply theme
-                if (window.applyTheme) {
-                    applyTheme(DEFAULT_SETTINGS.theme);
-                }
-
+                updateUI(DEFAULT_SETTINGS);
                 showSuccessMessage('Settings reset to default!');
             }
         });
     }
+
     // Export Data handler
     const exportBtn = document.getElementById('exportDataBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
             if (window.pybridge) {
-                const message = {
-                    type: 'export_data',
-                    payload: {}
-                };
+                const message = { type: 'export_data', payload: {} };
                 window.pybridge.sendMessage(JSON.stringify(message));
                 exportBtn.disabled = true;
                 exportBtn.textContent = 'Exporting...';
@@ -196,10 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const data = JSON.parse(event.target.result);
                     if (window.pybridge) {
-                        const message = {
-                            type: 'import_data',
-                            payload: { data: data }
-                        };
+                        const message = { type: 'import_data', payload: { data: data } };
                         window.pybridge.sendMessage(JSON.stringify(message));
                         importBtn.disabled = true;
                         importBtn.textContent = 'Importing...';
@@ -212,13 +196,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Handle responses from Python via a global function (if not already handled)
+    // Handle responses from Python
     window.handleBridgeMessage = function (messageStr) {
         try {
             const message = JSON.parse(messageStr);
             console.log('Received bridge message:', message);
 
-            if (message.type === 'export_data_response' && message.payload.success) {
+            if (message.type === 'load_settings_response' && message.payload.success) {
+                const backendSettings = message.payload.settings;
+                if (backendSettings && Object.keys(backendSettings).length > 0) {
+                    console.log('Applying backend settings:', backendSettings);
+                    localStorage.setItem('appSettings', JSON.stringify(backendSettings));
+                    applySettings(backendSettings);
+                    updateUI(backendSettings);
+                }
+            } else if (message.type === 'export_data_response' && message.payload.success) {
                 const dataStr = JSON.stringify(message.payload.data, null, 4);
                 const blob = new Blob([dataStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -244,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Data imported successfully. Please restart the addon.');
             } else if (message.type === 'error') {
                 console.error('Bridge error:', message.payload.message);
-                alert('Error: ' + message.payload.message);
                 if (exportBtn) { exportBtn.disabled = false; exportBtn.textContent = 'Export'; }
                 if (importBtn) { importBtn.disabled = false; importBtn.textContent = 'Import'; }
             }
@@ -252,6 +243,26 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error handling bridge message:', e);
         }
     };
+
+    // Helper to update UI elements based on settings
+    function updateUI(settings) {
+        const themeToggle = document.getElementById('themeToggle');
+        const soundToggle = document.getElementById('soundToggle');
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+        const autoCheck = document.getElementById('autoCheck');
+        const adaptiveToggle = document.getElementById('adaptiveDifficultyToggle');
+
+        if (themeToggle) themeToggle.checked = settings.theme === 'dark' || settings.theme === 'auto';
+        if (soundToggle) soundToggle.checked = settings.soundEnabled;
+        if (notificationsToggle) notificationsToggle.checked = settings.notificationsEnabled;
+        if (timerDisplay) timerDisplay.checked = settings.showTimer;
+        if (accuracyDisplay) accuracyDisplay.checked = settings.showAccuracy;
+        if (autoCheck) autoCheck.checked = settings.autoCheckAnswers;
+        if (adaptiveToggle) adaptiveToggle.checked = settings.adaptiveDifficulty || false;
+    }
+
 });
 
 // Show success message
